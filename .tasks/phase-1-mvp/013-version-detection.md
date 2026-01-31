@@ -34,10 +34,10 @@ Add functionality to detect installed plugin versions and compare them with avai
 6. Cross-reference with marketplace data
 
 ## Acceptance Criteria
-- [ ] Installed plugins show their version
-- [ ] Versions compared against marketplace data
-- [ ] "Update Available" indicator shown when update exists
-- [ ] Both installed and available versions displayed
-- [ ] Version comparison handles semver format
-- [ ] Version comparison handles non-standard versions gracefully
-- [ ] Works with cached marketplace data
+- [x] Installed plugins show their version
+- [x] Versions compared against marketplace data
+- [x] "Update Available" indicator shown when update exists
+- [x] Both installed and available versions displayed
+- [x] Version comparison handles semver format
+- [x] Version comparison handles non-standard versions gracefully
+- [x] Works with cached marketplace data

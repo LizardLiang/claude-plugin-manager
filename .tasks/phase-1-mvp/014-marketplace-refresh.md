@@ -32,13 +32,13 @@ Add manual refresh functionality to fetch the latest marketplace data, with prop
 6. Auto-refresh on first load if cache is stale (>24 hours)
 
 ## Acceptance Criteria
-- [ ] Refresh button visible in marketplace view
-- [ ] Last synced timestamp displayed
-- [ ] Refresh button disabled during refresh operation
-- [ ] Loading indicator shown during refresh
-- [ ] Plugin list updates after successful refresh
-- [ ] Error message displayed on refresh failure
-- [ ] Network errors handled gracefully
-- [ ] API rate limit errors handled with appropriate message
-- [ ] Parse errors handled gracefully
-- [ ] Last synced time formatted in user-friendly way
+- [x] Refresh button visible in marketplace view
+- [x] Last synced timestamp displayed
+- [x] Refresh button disabled during refresh operation
+- [x] Loading indicator shown during refresh
+- [x] Plugin list updates after successful refresh
+- [x] Error message displayed on refresh failure
+- [x] Network errors handled gracefully
+- [x] API rate limit errors handled with appropriate message
+- [x] Parse errors handled gracefully
+- [x] Last synced time formatted in user-friendly way

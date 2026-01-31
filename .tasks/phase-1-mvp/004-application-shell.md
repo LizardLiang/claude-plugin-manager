@@ -26,9 +26,9 @@ Build the main application shell with a navigation system that allows users to s
 6. Add application icon and window title
 
 ## Acceptance Criteria
-- [ ] MainWindow displays navigation sidebar and content area
-- [ ] Navigation tabs for Marketplace, Installed, and Settings visible
-- [ ] Clicking navigation tabs switches the content area
-- [ ] Current tab is visually highlighted
-- [ ] Placeholder ViewModels created for each section
-- [ ] Application has proper window title ("Claude Code Plugin Manager")
+- [x] MainWindow displays navigation sidebar and content area
+- [x] Navigation tabs for Marketplace, Installed, and Settings visible
+- [x] Clicking navigation tabs switches the content area
+- [x] Current tab is visually highlighted
+- [x] Placeholder ViewModels created for each section
+- [x] Application has proper window title ("Claude Code Plugin Manager")

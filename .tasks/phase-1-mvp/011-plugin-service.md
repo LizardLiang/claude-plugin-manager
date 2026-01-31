@@ -42,12 +42,12 @@ Create a service to handle plugin installation and uninstallation to the global 
    - Rollback on failure
 
 ## Acceptance Criteria
-- [ ] `IPluginService` interface defined
-- [ ] Can install MCP Server plugins to global settings
-- [ ] Can install other plugin types (Hooks, Commands, etc.)
-- [ ] Can uninstall plugins from global settings
-- [ ] `GetInstalledGlobalAsync()` returns list of installed plugins
-- [ ] `IsInstalled()` correctly identifies installed plugins
-- [ ] Installation metadata tracked in local database
-- [ ] Settings backed up before modification
-- [ ] Rollback occurs on installation failure
+- [x] `IPluginService` interface defined
+- [x] Can install MCP Server plugins to global settings
+- [x] Can install other plugin types (Hooks, Commands, etc.)
+- [x] Can uninstall plugins from global settings
+- [x] `GetInstalledGlobalAsync()` returns list of installed plugins
+- [x] `IsInstalled()` correctly identifies installed plugins
+- [x] Installation metadata tracked in local database
+- [x] Settings backed up before modification
+- [x] Rollback occurs on installation failure

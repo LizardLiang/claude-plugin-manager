@@ -38,10 +38,10 @@ Build the UI component that displays a list of available plugins from the market
 6. Add empty state when no plugins found
 
 ## Acceptance Criteria
-- [ ] `Plugin` model with all required properties
-- [ ] `PluginListItemViewModel` created
-- [ ] `MarketplaceView` displays list of plugins
-- [ ] Each plugin item shows name, description, author, type, and version
-- [ ] Loading indicator displays while fetching plugins
-- [ ] Empty state message when no plugins available
-- [ ] List is scrollable for many plugins
+- [x] `Plugin` model with all required properties
+- [x] `PluginListItemViewModel` created
+- [x] `MarketplaceView` displays list of plugins
+- [x] Each plugin item shows name, description, author, type, and version
+- [x] Loading indicator displays while fetching plugins
+- [x] Empty state message when no plugins available
+- [x] List is scrollable for many plugins

@@ -1,20 +1,81 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:ClaudePluginManager.ViewModels"
+        xmlns:models="using:ClaudePluginManager.Models"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
         x:Class="ClaudePluginManager.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="ClaudePluginManager">
+        Title="Claude Code Plugin Manager"
+        MinWidth="700"
+        MinHeight="500">
 
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
+    <Grid ColumnDefinitions="200,*">
+        <!-- Navigation Sidebar -->
+        <Border Grid.Column="0"
+                Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                BorderThickness="0,0,1,0">
+            <DockPanel>
+                <!-- App Title -->
+                <StackPanel DockPanel.Dock="Top" Margin="16,20,16,24">
+                    <TextBlock Text="Claude Code"
+                               FontSize="18"
+                               FontWeight="SemiBold"/>
+                    <TextBlock Text="Plugin Manager"
+                               FontSize="12"
+                               Opacity="0.7"/>
+                </StackPanel>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <!-- Navigation Items -->
+                <ItemsControl ItemsSource="{Binding NavigationItems}" Margin="8,0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:NavigationItem">
+                            <Button Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).NavigateCommand}"
+                                    CommandParameter="{Binding}"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Padding="12,10"
+                                    Margin="0,2"
+                                    Classes.selected="{Binding IsSelected}">
+                                <Button.Styles>
+                                    <Style Selector="Button">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="CornerRadius" Value="6"/>
+                                    </Style>
+                                    <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                        <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}"/>
+                                    </Style>
+                                    <Style Selector="Button.selected">
+                                        <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumBrush}"/>
+                                    </Style>
+                                    <Style Selector="Button.selected /template/ ContentPresenter">
+                                        <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumBrush}"/>
+                                    </Style>
+                                </Button.Styles>
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <PathIcon Data="{Binding Icon}"
+                                              Width="18"
+                                              Height="18"/>
+                                    <TextBlock Text="{Binding Label}"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </DockPanel>
+        </Border>
+
+        <!-- Content Area -->
+        <Border Grid.Column="1"
+                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+            <ContentControl Content="{Binding CurrentViewModel}"
+                            Margin="24"/>
+        </Border>
+    </Grid>
 
 </Window>

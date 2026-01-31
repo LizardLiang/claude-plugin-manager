@@ -1,0 +1,225 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:ClaudePluginManager.ViewModels"
+             xmlns:views="using:ClaudePluginManager.Views"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+             x:Class="ClaudePluginManager.Views.MarketplaceView"
+             x:DataType="vm:MarketplaceViewModel">
+
+    <!-- Main two-column layout -->
+    <Grid ColumnDefinitions="*,Auto">
+        <!-- Left column: Plugin list -->
+        <Grid Grid.Column="0" RowDefinitions="Auto,Auto,Auto,*">
+            <!-- Header with Refresh Button -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Marketplace"
+                               FontSize="24"
+                               FontWeight="SemiBold"/>
+                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
+                        <TextBlock Text="Browse and install plugins"
+                                   Opacity="0.7"/>
+                        <TextBlock Text="|"
+                                   Opacity="0.4"/>
+                        <TextBlock Text="{Binding LastSyncedText}"
+                                   Opacity="0.6"
+                                   FontSize="12"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <Button Grid.Column="1"
+                        Command="{Binding RefreshCommand}"
+                        IsEnabled="{Binding !IsRefreshing}"
+                        VerticalAlignment="Top"
+                        Padding="12,8">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="&#x21BB;"
+                                   FontSize="14"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="Refresh"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <!-- Refresh Status -->
+            <StackPanel Grid.Row="1" Margin="0,0,0,8">
+                <!-- Refresh Progress -->
+                <StackPanel Orientation="Horizontal"
+                            Spacing="8"
+                            IsVisible="{Binding IsRefreshing}">
+                    <ProgressBar IsIndeterminate="True"
+                                 Width="100"
+                                 Height="4"/>
+                    <TextBlock Text="Refreshing..."
+                               Opacity="0.7"
+                               FontSize="12"/>
+                </StackPanel>
+
+                <!-- Refresh Error -->
+                <TextBlock Text="{Binding RefreshError}"
+                           Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}"
+                           FontSize="12"
+                           IsVisible="{Binding RefreshError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+            </StackPanel>
+
+            <!-- Search and Filter Bar -->
+            <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,16">
+                <!-- Search TextBox with Clear button -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBox Text="{Binding SearchText}"
+                             Watermark="Search by name, description, author, or tags..."
+                             VerticalContentAlignment="Center"/>
+                    <Button Grid.Column="1"
+                            Content="&#x2715;"
+                            Command="{Binding ClearSearchCommand}"
+                            IsVisible="{Binding HasSearchText}"
+                            Margin="-32,0,0,0"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            VerticalAlignment="Center"
+                            Padding="8,4"/>
+                </Grid>
+
+                <!-- Type Filter ComboBox -->
+                <ComboBox Grid.Column="1"
+                          ItemsSource="{Binding TypeFilters}"
+                          SelectedItem="{Binding SelectedTypeFilter}"
+                          Margin="8,0,0,0"
+                          MinWidth="140"/>
+
+                <!-- Result Count -->
+                <TextBlock Grid.Column="2"
+                           Text="{Binding ResultCountText}"
+                           VerticalAlignment="Center"
+                           Opacity="0.7"
+                           Margin="12,0,0,0"/>
+            </Grid>
+
+            <!-- Content Area -->
+            <Grid Grid.Row="3">
+                <!-- Loading State -->
+                <StackPanel VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Spacing="12"
+                            IsVisible="{Binding IsLoading}">
+                    <ProgressBar IsIndeterminate="True"
+                                 Width="200"/>
+                    <TextBlock Text="Loading plugins..."
+                               HorizontalAlignment="Center"
+                               Opacity="0.7"/>
+                </StackPanel>
+
+                <!-- Error State -->
+                <StackPanel VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Spacing="12"
+                            IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               HorizontalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}"/>
+                    <Button Content="Retry"
+                            HorizontalAlignment="Center"
+                            Command="{Binding LoadPluginsCommand}"/>
+                </StackPanel>
+
+                <!-- Empty State -->
+                <StackPanel VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Spacing="8"
+                            IsVisible="{Binding IsEmpty}">
+                    <TextBlock Text="No plugins available"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Check back later for new plugins"
+                               Opacity="0.7"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Plugin List -->
+                <ScrollViewer>
+                    <ScrollViewer.IsVisible>
+                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                            <Binding Path="!IsLoading"/>
+                            <Binding Path="!IsEmpty"/>
+                            <Binding Path="ErrorMessage" Converter="{x:Static StringConverters.IsNullOrEmpty}"/>
+                        </MultiBinding>
+                    </ScrollViewer.IsVisible>
+                    <ItemsControl ItemsSource="{Binding Plugins}" Margin="0,0,16,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:PluginListItemViewModel">
+                                <Button Command="{Binding $parent[ItemsControl].((vm:MarketplaceViewModel)DataContext).SelectPluginCommand}"
+                                        CommandParameter="{Binding}"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Padding="0"
+                                        Margin="0,0,0,8"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Stretch"
+                                        Cursor="Hand">
+                                    <Border Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                                            CornerRadius="8"
+                                            Padding="16">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Grid.Column="0" Spacing="4">
+                                                <!-- Name and Version -->
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <TextBlock Text="{Binding Name}"
+                                                               FontSize="16"
+                                                               FontWeight="SemiBold"/>
+                                                    <TextBlock Text="{Binding Version, StringFormat='v{0}'}"
+                                                               Opacity="0.6"
+                                                               VerticalAlignment="Center"/>
+                                                </StackPanel>
+
+                                                <!-- Description -->
+                                                <TextBlock Text="{Binding Description}"
+                                                           TextWrapping="Wrap"
+                                                           Opacity="0.8"
+                                                           MaxLines="2"
+                                                           TextTrimming="CharacterEllipsis"/>
+
+                                                <!-- Author -->
+                                                <TextBlock Opacity="0.6" Margin="0,4,0,0">
+                                                    <Run Text="by"/>
+                                                    <Run Text="{Binding Author}"/>
+                                                </TextBlock>
+                                            </StackPanel>
+
+                                            <!-- Type Badge -->
+                                            <Border Grid.Column="1"
+                                                    Background="{DynamicResource SystemControlHighlightAccentBrush}"
+                                                    CornerRadius="4"
+                                                    Padding="8,4"
+                                                    VerticalAlignment="Top">
+                                                <TextBlock Text="{Binding DisplayType}"
+                                                           FontSize="12"
+                                                           Foreground="White"/>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+
+        <!-- Right column: Details panel -->
+        <ContentControl Grid.Column="1"
+                        Content="{Binding SelectedPluginDetails}"
+                        IsVisible="{Binding SelectedPluginDetails, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <ContentControl.ContentTemplate>
+                <DataTemplate x:DataType="vm:PluginDetailsViewModel">
+                    <views:PluginDetailsView Width="400"/>
+                </DataTemplate>
+            </ContentControl.ContentTemplate>
+        </ContentControl>
+    </Grid>
+
+</UserControl>

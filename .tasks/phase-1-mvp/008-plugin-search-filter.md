@@ -25,12 +25,12 @@ Add search and filter functionality to the marketplace view, allowing users to f
 6. Show result count ("Showing X of Y plugins")
 
 ## Acceptance Criteria
-- [ ] Search textbox present in MarketplaceView
-- [ ] Type filter dropdown/selector present
-- [ ] Typing in search filters plugins in real-time
-- [ ] Search matches name, description, tags, and author
-- [ ] Type filter limits results to selected plugin type
-- [ ] Search and type filter work together (AND logic)
-- [ ] Clear button resets search
-- [ ] Result count displayed
-- [ ] Search is debounced (not filtering on every keystroke)
+- [x] Search textbox present in MarketplaceView
+- [x] Type filter dropdown/selector present
+- [x] Typing in search filters plugins in real-time
+- [x] Search matches name, description, tags, and author
+- [x] Type filter limits results to selected plugin type
+- [x] Search and type filter work together (AND logic)
+- [x] Clear button resets search
+- [x] Result count displayed
+- [x] Search is debounced (not filtering on every keystroke)

@@ -1,0 +1,147 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:ClaudePluginManager.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+             x:Class="ClaudePluginManager.Views.InstalledView"
+             x:DataType="vm:InstalledViewModel">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="Installed Plugins"
+                       FontSize="24"
+                       FontWeight="SemiBold"/>
+            <TextBlock Text="Manage your installed plugins"
+                       Opacity="0.7"
+                       Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Content Area -->
+        <Grid Grid.Row="1">
+            <!-- Loading State -->
+            <StackPanel VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Spacing="12"
+                        IsVisible="{Binding IsLoading}">
+                <ProgressBar IsIndeterminate="True"
+                             Width="200"/>
+                <TextBlock Text="Loading installed plugins..."
+                           HorizontalAlignment="Center"
+                           Opacity="0.7"/>
+            </StackPanel>
+
+            <!-- Error State -->
+            <StackPanel VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Spacing="12"
+                        IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <TextBlock Text="{Binding ErrorMessage}"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}"/>
+                <Button Content="Retry"
+                        HorizontalAlignment="Center"
+                        Command="{Binding LoadPluginsCommand}"/>
+            </StackPanel>
+
+            <!-- Empty State -->
+            <StackPanel VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Spacing="8"
+                        IsVisible="{Binding IsEmpty}">
+                <TextBlock Text="No plugins installed"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="Visit the Marketplace to install plugins"
+                           Opacity="0.7"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Plugin List -->
+            <ScrollViewer>
+                <ScrollViewer.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <Binding Path="!IsLoading"/>
+                        <Binding Path="!IsEmpty"/>
+                        <Binding Path="ErrorMessage" Converter="{x:Static StringConverters.IsNullOrEmpty}"/>
+                    </MultiBinding>
+                </ScrollViewer.IsVisible>
+                <ItemsControl ItemsSource="{Binding Plugins}" Margin="0,0,16,0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:InstalledPluginViewModel">
+                            <Border Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                                    CornerRadius="8"
+                                    Padding="16"
+                                    Margin="0,0,0,8">
+                                <Grid ColumnDefinitions="*,Auto,Auto">
+                                    <!-- Plugin Info -->
+                                    <StackPanel Grid.Column="0" Spacing="4">
+                                        <!-- Name and Version -->
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock Text="{Binding Name}"
+                                                       FontSize="16"
+                                                       FontWeight="SemiBold"/>
+                                            <TextBlock Text="{Binding VersionDisplay, StringFormat='v{0}'}"
+                                                       Opacity="0.6"
+                                                       VerticalAlignment="Center"
+                                                       IsVisible="{Binding VersionDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                            <!-- Update Available Badge -->
+                                            <Border Background="#F97316"
+                                                    CornerRadius="4"
+                                                    Padding="6,2"
+                                                    VerticalAlignment="Center"
+                                                    IsVisible="{Binding HasUpdate}">
+                                                <TextBlock Text="Update Available"
+                                                           FontSize="11"
+                                                           Foreground="White"/>
+                                            </Border>
+                                        </StackPanel>
+
+                                        <!-- Installed Date -->
+                                        <TextBlock Opacity="0.6">
+                                            <Run Text="Installed"/>
+                                            <Run Text="{Binding InstalledAtDisplay}"/>
+                                        </TextBlock>
+                                    </StackPanel>
+
+                                    <!-- Type Badge -->
+                                    <Border Grid.Column="1"
+                                            Background="{DynamicResource SystemControlHighlightAccentBrush}"
+                                            CornerRadius="4"
+                                            Padding="8,4"
+                                            VerticalAlignment="Center"
+                                            Margin="12,0">
+                                        <TextBlock Text="{Binding DisplayType}"
+                                                   FontSize="12"
+                                                   Foreground="White"/>
+                                    </Border>
+
+                                    <!-- Uninstall Button -->
+                                    <Button Grid.Column="2"
+                                            Content="Uninstall"
+                                            Command="{Binding $parent[ItemsControl].((vm:InstalledViewModel)DataContext).UninstallCommand}"
+                                            CommandParameter="{Binding}"
+                                            IsEnabled="{Binding !IsUninstalling}"
+                                            VerticalAlignment="Center"/>
+
+                                    <!-- Uninstalling Indicator -->
+                                    <StackPanel Grid.Column="2"
+                                                Orientation="Horizontal"
+                                                Spacing="8"
+                                                VerticalAlignment="Center"
+                                                IsVisible="{Binding IsUninstalling}">
+                                        <ProgressBar IsIndeterminate="True"
+                                                     Width="60"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+
+</UserControl>

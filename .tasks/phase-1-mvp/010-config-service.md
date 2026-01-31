@@ -41,11 +41,11 @@ Create a service for reading and writing Claude Code's `settings.json` configura
 6. Validate JSON structure before writing
 
 ## Acceptance Criteria
-- [ ] `ClaudeSettings` and related models defined
-- [ ] `IConfigService` interface created
-- [ ] Can read global settings from `~/.claude/settings.json`
-- [ ] Can write settings back to file with proper formatting
-- [ ] Creates settings file if it doesn't exist
-- [ ] Creates `.claude` directory if it doesn't exist
-- [ ] Handles malformed JSON gracefully
-- [ ] Preserves unknown properties in settings (doesn't delete them)
+- [x] `ClaudeSettings` and related models defined
+- [x] `IConfigService` interface created
+- [x] Can read global settings from `~/.claude/settings.json`
+- [x] Can write settings back to file with proper formatting
+- [x] Creates settings file if it doesn't exist
+- [x] Creates `.claude` directory if it doesn't exist
+- [x] Handles malformed JSON gracefully
+- [x] Preserves unknown properties in settings (doesn't delete them)

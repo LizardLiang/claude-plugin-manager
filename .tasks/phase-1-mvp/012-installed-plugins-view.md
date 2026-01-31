@@ -38,12 +38,12 @@ Build the UI for viewing and managing installed plugins in the global scope.
 5. Add empty state for no installed plugins
 
 ## Acceptance Criteria
-- [ ] `InstalledViewModel` and `InstalledPluginViewModel` created
-- [ ] `InstalledView` displays list of installed plugins
-- [ ] Each plugin shows name, version, type, and install date
-- [ ] Uninstall button present for each plugin
-- [ ] Confirmation required before uninstall
-- [ ] Plugin removed from list after successful uninstall
-- [ ] Error handling for failed uninstalls
-- [ ] Empty state when no plugins installed
-- [ ] Loading indicator while fetching installed plugins
+- [x] `InstalledViewModel` and `InstalledPluginViewModel` created
+- [x] `InstalledView` displays list of installed plugins
+- [x] Each plugin shows name, version, type, and install date
+- [x] Uninstall button present for each plugin
+- [x] Confirmation required before uninstall
+- [x] Plugin removed from list after successful uninstall
+- [x] Error handling for failed uninstalls
+- [x] Empty state when no plugins installed
+- [x] Loading indicator while fetching installed plugins

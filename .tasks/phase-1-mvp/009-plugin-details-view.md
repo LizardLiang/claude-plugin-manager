@@ -33,11 +33,11 @@ Build a detailed view for individual plugins showing full information, README co
 5. Consider side panel or modal display
 
 ## Acceptance Criteria
-- [ ] `PluginDetailsViewModel` created with required properties
-- [ ] Plugin details view displays: name, version, author, type, tags
-- [ ] Repository URL is displayed and clickable
-- [ ] README content is fetched and displayed
-- [ ] Loading state shown while fetching README
-- [ ] Install button visible (functionality in later task)
-- [ ] Close/back navigation works
-- [ ] Graceful handling when README is missing
+- [x] `PluginDetailsViewModel` created with required properties
+- [x] Plugin details view displays: name, version, author, type, tags
+- [x] Repository URL is displayed and clickable
+- [x] README content is fetched and displayed
+- [x] Loading state shown while fetching README
+- [x] Install button visible (functionality in later task)
+- [x] Close/back navigation works
+- [x] Graceful handling when README is missing
