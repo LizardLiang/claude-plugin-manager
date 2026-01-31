@@ -77,7 +77,7 @@ public class MarketplaceServiceTests : IDisposable
     {
         // Arrange
         var marketplaceJson = CreateMarketplaceJson(
-            new PluginEntry { Name = "test-plugin", Description = "A test plugin", Type = "MCP_SERVER" }
+            new PluginEntry { Name = "test-plugin", Description = "A test plugin", McpServers = new List<string> { "server" } }
         );
         _gitHubClient.GetFileContentAsync("claude-market", "marketplace", ".claude-plugin/marketplace.json")
             .Returns(marketplaceJson);
@@ -213,7 +213,7 @@ public class MarketplaceServiceTests : IDisposable
         await InsertTestPlugin("official/old-plugin", "old-plugin");
 
         var marketplaceJson = CreateMarketplaceJson(
-            new PluginEntry { Name = "new-plugin", Description = "Fresh from GitHub", Type = "MCP_SERVER" }
+            new PluginEntry { Name = "new-plugin", Description = "Fresh from GitHub", McpServers = new List<string> { "server" } }
         );
         _gitHubClient.GetFileContentAsync("claude-market", "marketplace", ".claude-plugin/marketplace.json")
             .Returns(marketplaceJson);
@@ -230,7 +230,7 @@ public class MarketplaceServiceTests : IDisposable
     {
         // Arrange
         var marketplaceJson = CreateMarketplaceJson(
-            new PluginEntry { Name = "test-plugin", Type = "MCP_SERVER" }
+            new PluginEntry { Name = "test-plugin", McpServers = new List<string> { "server" } }
         );
         _gitHubClient.GetFileContentAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(marketplaceJson);
@@ -249,8 +249,8 @@ public class MarketplaceServiceTests : IDisposable
     {
         // Arrange
         var marketplaceJson = CreateMarketplaceJson(
-            new PluginEntry { Name = "plugin1", Type = "MCP_SERVER" },
-            new PluginEntry { Name = "plugin2", Type = "HOOK" }
+            new PluginEntry { Name = "plugin1", McpServers = new List<string> { "server" } },
+            new PluginEntry { Name = "plugin2", Hooks = new List<string> { "hook" } }
         );
         _gitHubClient.GetFileContentAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(marketplaceJson);
@@ -373,10 +373,10 @@ public class MarketplaceServiceTests : IDisposable
             Name = "complete-plugin",
             Description = "Full description",
             Version = "1.2.3",
-            Author = "Test Author",
+            Author = new PluginAuthor { Name = "Test Author" },
             Repository = "https://github.com/test/repo",
-            Type = "MCP_SERVER",
-            Tags = new List<string> { "database", "tool" }
+            McpServers = new List<string> { "server" },
+            Keywords = new List<string> { "database", "tool" }
         };
         var marketplaceJson = CreateMarketplaceJson(plugin);
         _gitHubClient.GetFileContentAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
@@ -401,7 +401,7 @@ public class MarketplaceServiceTests : IDisposable
     {
         // Arrange
         var marketplaceJson = CreateMarketplaceJson(
-            new PluginEntry { Name = "my-plugin", Type = "MCP_SERVER" }
+            new PluginEntry { Name = "my-plugin", McpServers = new List<string> { "server" } }
         );
         _gitHubClient.GetFileContentAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(marketplaceJson);

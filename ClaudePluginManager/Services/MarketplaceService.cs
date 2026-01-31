@@ -136,8 +136,8 @@ public class MarketplaceService : IMarketplaceService
                 Name = entry.Name,
                 Description = entry.Description,
                 Version = entry.Version,
-                Author = entry.Author,
-                Repository = entry.Repository,
+                Author = entry.Author?.Name,
+                Repository = entry.Repository ?? entry.Source,
                 MarketplaceId = DefaultMarketplaceId,
                 Type = entry.Type,
                 Tags = entry.Tags != null ? JsonSerializer.Serialize(entry.Tags) : null
