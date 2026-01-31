@@ -50,32 +50,35 @@ public class MarketplaceService : IMarketplaceService
 
     public async Task RefreshAsync()
     {
+        var content = await _gitHubClient.GetFileContentAsync(
+            DefaultGitHubOwner,
+            DefaultGitHubRepo,
+            MarketplaceIndexPath);
+
+        if (string.IsNullOrEmpty(content))
+        {
+            throw new InvalidOperationException(
+                $"Could not fetch marketplace index from {DefaultGitHubOwner}/{DefaultGitHubRepo}");
+        }
+
+        MarketplaceIndex? marketplaceIndex;
         try
         {
-            var content = await _gitHubClient.GetFileContentAsync(
-                DefaultGitHubOwner,
-                DefaultGitHubRepo,
-                MarketplaceIndexPath);
-
-            if (string.IsNullOrEmpty(content))
-            {
-                return;
-            }
-
-            var marketplaceIndex = JsonSerializer.Deserialize<MarketplaceIndex>(content);
-            if (marketplaceIndex?.Plugins == null)
-            {
-                return;
-            }
-
-            await EnsureMarketplaceExistsAsync();
-            await SavePluginsAsync(marketplaceIndex.Plugins);
-            await UpdateLastSyncTimeAsync();
+            marketplaceIndex = JsonSerializer.Deserialize<MarketplaceIndex>(content);
         }
-        catch (JsonException)
+        catch (JsonException ex)
         {
-            // Malformed JSON - log and continue with existing cache
+            throw new InvalidOperationException("Failed to parse marketplace index: invalid JSON format", ex);
         }
+
+        if (marketplaceIndex?.Plugins == null)
+        {
+            throw new InvalidOperationException("Marketplace index is empty or invalid");
+        }
+
+        await EnsureMarketplaceExistsAsync();
+        await SavePluginsAsync(marketplaceIndex.Plugins);
+        await UpdateLastSyncTimeAsync();
     }
 
     public DateTime? GetLastSyncTime()

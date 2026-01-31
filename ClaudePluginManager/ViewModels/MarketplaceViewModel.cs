@@ -184,22 +184,48 @@ public partial class MarketplaceViewModel : ViewModelBase
                 {
                     await _marketplaceService.RefreshAsync();
                 }
+                catch (GitHubCliNotInstalledException)
+                {
+                    // First load with no cache - show error
+                    throw;
+                }
+                catch (GitHubCliNotAuthenticatedException)
+                {
+                    // First load with no cache - show error
+                    throw;
+                }
                 catch
                 {
-                    // Silent fail, use stale cache
+                    // Other errors - try to use stale cache
                 }
             }
 
             var plugins = await _marketplaceService.GetPluginsAsync();
 
-            _allPlugins.Clear();
-            foreach (var plugin in plugins)
+            if (!plugins.Any() && lastSync == null)
             {
-                _allPlugins.Add(new PluginListItemViewModel(plugin));
+                // No cache and no plugins loaded - something is wrong
+                ErrorMessage = "No plugins found. Click Refresh to try again.";
             }
+            else
+            {
+                _allPlugins.Clear();
+                foreach (var plugin in plugins)
+                {
+                    _allPlugins.Add(new PluginListItemViewModel(plugin));
+                }
 
-            ApplyFilters();
-            UpdateLastSyncedAt();
+                ApplyFilters();
+                UpdateLastSyncedAt();
+            }
+        }
+        catch (GitHubCliNotInstalledException ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+        catch (GitHubCliNotAuthenticatedException ex)
+        {
+            ErrorMessage = ex.Message;
         }
         catch (Exception ex)
         {
@@ -222,6 +248,7 @@ public partial class MarketplaceViewModel : ViewModelBase
         {
             IsRefreshing = true;
             RefreshError = null;
+            ErrorMessage = null;
 
             await _marketplaceService.RefreshAsync();
 
@@ -235,6 +262,14 @@ public partial class MarketplaceViewModel : ViewModelBase
             ApplyFilters();
 
             UpdateLastSyncedAt();
+        }
+        catch (GitHubCliNotInstalledException ex)
+        {
+            RefreshError = ex.Message;
+        }
+        catch (GitHubCliNotAuthenticatedException ex)
+        {
+            RefreshError = ex.Message;
         }
         catch (HttpRequestException ex)
         {

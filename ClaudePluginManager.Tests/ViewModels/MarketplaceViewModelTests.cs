@@ -162,7 +162,10 @@ public class MarketplaceViewModelTests
             callCount++;
             if (callCount == 1)
                 throw new Exception("Network error");
-            return Task.FromResult<IEnumerable<Plugin>>(new List<Plugin>());
+            return Task.FromResult<IEnumerable<Plugin>>(new List<Plugin>
+            {
+                new Plugin { Id = "1", Name = "Plugin 1", Type = "MCP_SERVER" }
+            });
         });
 
         await _viewModel.LoadPluginsCommand.ExecuteAsync(null);

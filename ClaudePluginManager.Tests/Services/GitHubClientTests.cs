@@ -126,16 +126,14 @@ public class GitHubClientTests
     }
 
     [Fact]
-    public async Task GetFileContentAsync_ReturnsNull_WhenGhNotAvailable()
+    public async Task GetFileContentAsync_ThrowsGitHubCliNotInstalledException_WhenGhNotAvailable()
     {
         // Arrange
         SetupGhNotAvailable();
 
-        // Act
-        var result = await _gitHubClient.GetFileContentAsync("owner", "repo", "file.txt");
-
-        // Assert
-        Assert.Null(result);
+        // Act & Assert
+        await Assert.ThrowsAsync<GitHubCliNotInstalledException>(
+            () => _gitHubClient.GetFileContentAsync("owner", "repo", "file.txt"));
     }
 
     #endregion
@@ -176,16 +174,14 @@ public class GitHubClientTests
     }
 
     [Fact]
-    public async Task GetReadmeAsync_ReturnsNull_WhenGhNotAvailable()
+    public async Task GetReadmeAsync_ThrowsGitHubCliNotInstalledException_WhenGhNotAvailable()
     {
         // Arrange
         SetupGhNotAvailable();
 
-        // Act
-        var result = await _gitHubClient.GetReadmeAsync("owner", "repo");
-
-        // Assert
-        Assert.Null(result);
+        // Act & Assert
+        await Assert.ThrowsAsync<GitHubCliNotInstalledException>(
+            () => _gitHubClient.GetReadmeAsync("owner", "repo"));
     }
 
     #endregion

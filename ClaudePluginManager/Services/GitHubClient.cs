@@ -46,32 +46,42 @@ public class GitHubClient : IGitHubClient
 
     public async Task<string?> GetFileContentAsync(string owner, string repo, string path)
     {
-        if (await IsGhAvailableAsync())
+        if (!await IsGhAvailableAsync())
         {
-            var result = await _processRunner.RunAsync("gh", "api", $"repos/{owner}/{repo}/contents/{path}");
-            if (!result.Success)
-                return null;
-
-            return DecodeBase64Content(result.Output);
+            throw new GitHubCliNotInstalledException();
         }
 
-        // No good git fallback for file content without cloning
-        return null;
+        var result = await _processRunner.RunAsync("gh", "api", $"repos/{owner}/{repo}/contents/{path}");
+        if (!result.Success)
+        {
+            if (result.Error?.Contains("gh auth login") == true)
+            {
+                throw new GitHubCliNotAuthenticatedException();
+            }
+            return null;
+        }
+
+        return DecodeBase64Content(result.Output);
     }
 
     public async Task<string?> GetReadmeAsync(string owner, string repo)
     {
-        if (await IsGhAvailableAsync())
+        if (!await IsGhAvailableAsync())
         {
-            var result = await _processRunner.RunAsync("gh", "api", $"repos/{owner}/{repo}/readme");
-            if (!result.Success)
-                return null;
-
-            return DecodeBase64Content(result.Output);
+            throw new GitHubCliNotInstalledException();
         }
 
-        // No good git fallback for README without cloning
-        return null;
+        var result = await _processRunner.RunAsync("gh", "api", $"repos/{owner}/{repo}/readme");
+        if (!result.Success)
+        {
+            if (result.Error?.Contains("gh auth login") == true)
+            {
+                throw new GitHubCliNotAuthenticatedException();
+            }
+            return null;
+        }
+
+        return DecodeBase64Content(result.Output);
     }
 
     public async Task<GitHubRelease[]> GetReleasesAsync(string owner, string repo)

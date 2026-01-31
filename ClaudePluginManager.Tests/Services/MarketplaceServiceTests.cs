@@ -108,31 +108,27 @@ public class MarketplaceServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task GetPluginsAsync_WhenGitHubFails_ReturnsEmptyCollection()
+    public async Task GetPluginsAsync_WhenGitHubFails_ThrowsException()
     {
         // Arrange
         _gitHubClient.GetFileContentAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns((string?)null);
 
-        // Act
-        var result = await _marketplaceService.GetPluginsAsync();
-
-        // Assert
-        Assert.Empty(result);
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _marketplaceService.GetPluginsAsync());
     }
 
     [Fact]
-    public async Task GetPluginsAsync_WhenMalformedJson_ReturnsEmptyCollection()
+    public async Task GetPluginsAsync_WhenMalformedJson_ThrowsException()
     {
         // Arrange
         _gitHubClient.GetFileContentAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns("{ invalid json }");
 
-        // Act
-        var result = await _marketplaceService.GetPluginsAsync();
-
-        // Assert
-        Assert.Empty(result);
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _marketplaceService.GetPluginsAsync());
     }
 
     #endregion
@@ -270,7 +266,7 @@ public class MarketplaceServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task RefreshAsync_WhenGitHubFails_DoesNotClearCache()
+    public async Task RefreshAsync_WhenGitHubFails_ThrowsButCachePreserved()
     {
         // Arrange
         await InsertTestMarketplace();
@@ -278,8 +274,11 @@ public class MarketplaceServiceTests : IDisposable
         _gitHubClient.GetFileContentAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns((string?)null);
 
-        // Act
-        await _marketplaceService.RefreshAsync();
+        // Act - RefreshAsync throws but cache should be preserved
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _marketplaceService.RefreshAsync());
+
+        // GetPluginsAsync should return cached plugins (doesn't call RefreshAsync if cache exists)
         var plugins = await _marketplaceService.GetPluginsAsync();
 
         // Assert
@@ -323,52 +322,42 @@ public class MarketplaceServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task RefreshAsync_WhenDeserializationReturnsNull_DoesNotThrow()
+    public async Task RefreshAsync_WhenDeserializationReturnsNull_ThrowsException()
     {
         // Arrange - JSON "null" deserializes to null object
         _gitHubClient.GetFileContentAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns("null");
 
-        // Act
-        await _marketplaceService.RefreshAsync();
-
-        // Assert - no exception thrown, cache remains unchanged
-        var plugins = await _marketplaceService.GetPluginsAsync();
-        Assert.Empty(plugins);
+        // Act & Assert
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _marketplaceService.RefreshAsync());
+        Assert.Contains("empty or invalid", ex.Message);
     }
 
     [Fact]
-    public async Task RefreshAsync_WhenPluginsExplicitlyNull_DoesNotThrow()
+    public async Task RefreshAsync_WhenPluginsExplicitlyNull_ThrowsException()
     {
         // Arrange - Plugins property is explicitly null in JSON
         _gitHubClient.GetFileContentAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns("{\"name\":\"test\",\"plugins\":null}");
 
-        // Act
-        await _marketplaceService.RefreshAsync();
-
-        // Assert - no exception thrown
-        var plugins = await _marketplaceService.GetPluginsAsync();
-        Assert.Empty(plugins);
+        // Act & Assert
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _marketplaceService.RefreshAsync());
+        Assert.Contains("empty or invalid", ex.Message);
     }
 
     [Fact]
-    public async Task RefreshAsync_WithCompletelyInvalidJson_CatchesJsonException()
+    public async Task RefreshAsync_WithCompletelyInvalidJson_ThrowsException()
     {
         // Arrange - use string that will definitely throw JsonException
-        await InsertTestMarketplace();
-        await InsertTestPlugin("official/preserved", "preserved");
-
         _gitHubClient.GetFileContentAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns("not json at all {{{{");
 
-        // Act
-        await _marketplaceService.RefreshAsync();
-
-        // Assert - JsonException caught, existing cache preserved
-        var plugins = await _marketplaceService.GetPluginsAsync();
-        Assert.Single(plugins);
-        Assert.Equal("preserved", plugins.First().Name);
+        // Act & Assert
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _marketplaceService.RefreshAsync());
+        Assert.Contains("invalid JSON format", ex.Message);
     }
 
     #endregion
